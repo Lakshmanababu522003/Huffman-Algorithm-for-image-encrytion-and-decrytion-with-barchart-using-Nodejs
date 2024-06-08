@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js
+"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js">
+    </script>
+    <title>Huffman Encoding and Decoding</title>
+
+</head>
+
+<body>
+    <style>
+        p {
+            color: black;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        h3 {
+            font-weight: bold;
+        }
+
+        .con {
+            display: flex;
+        }
+
+        .fgc {
+            width: 600px;
+        }
+
+        .left {
+            margin-top: 80px;
+        }
+
+        .right {
+            margin-top: 50px;
+        }
+
+        button {
+            background-color: #00FFFF;
+            color: #000;
+            font-weight: bold;
+        }
+
+        label {
+            color: #000;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        h1,
+        h3 {
+            color: #097969;
+        }
+    </style>
+    <h1 class="text-center">Huffman Encoding and Decoding</h1>
+    <div class="container con">
+
+        <div class="left" style="width: 50%;">
+            <img style="width: 500px;height: 500px;" src="./assets/img.png" alt="img">
+        </div>
+        <div class="right" style="width: 50%;">
+
+            <form action="/encode" method="post" enctype="multipart/form-data">
+                <div class="form-group container fgc">
+                    <label for="file">Upload File:</label>
+                    <input style="width: 500px;" class="form-control" type="file" name="file" id="" required>
+                </div>
+                <br>
+                <div class="form-group container fgc">
+                    <button style="width: 500px;" class="btn  btn-block">Encode Image</button>
+                </div>
+                <br>
+            </form>
+            <form action="/decode" method="post" enctype="multipart/form-data">
+                <div class="form-group container fgc">
+                    <label for="file">Upload a Encoded File:</label>
+                    <input style="width: 500px;" class="form-control" type="file" name="file" id="" required>
+                </div>
+                <br>
+                <div class="form-group container fgc">
+                    <button style="width: 500px;" class="btn  btn-block">Decoded Image</button>
+                </div>
+            </form><br>
+            <form action="/compress" method="post" enctype="multipart/form-data">
+                <div class="form-group container fgc">
+                    <label for="file">Upload Image to Compress:</label>
+                    <input style="width: 500px;" class="form-control" type="file" name="file" id="" required>
+                </div>
+                <br>
+                <div class="form-group container fgc">
+                    <button style="width: 500px;" class="btn btn-block">Compress Image</button>
+                </div>
+            </form>
+            <br>
+            <!-- <form action="/decompress" method="post" enctype="multipart/form-data">
+            <div class="form-group container fgc">
+                <label for="file">Upload Image to Decompress:</label>
+                <input style="width: 500px;" class="form-control" type="file" name="file" id="" required>
+            </div>
+            <br>
+            <div class="form-group container fgc">
+                <button style="width: 500px;" class="btn btn-block">Decompress Image</button>
+            </div>
+        </form> -->
+            <!-- </div> -->
+
+        </div>
+        <canvas id="myChart" style="width:100%;max-width:700px"></canvas>
+        <div style="margin-top: 350px;margin-left: -650px;width: 100%;">
+            <% if (originalSizeKB && compressedSizeKB && compressionRatio) { %>
+                <h3 style="width: 500px;">Compression Result:</h3>
+                <p>Original Image Size: <%= originalSizeKB %> KB</p>
+                <p>Compressed Image Size: <%= compressedSizeKB %> KB</p>
+                <p>Compression Ratio: <%= compressionRatio.toFixed(2) %>
+                </p>
+                <% } %>
+                    <!-- <% if (decompressedSizeKB && decompressionRatio) { %>
+    <h3>Decompression Result:</h3>
+    <p>Decompressed Image Size: <%= decompressedSizeKB %> KB</p>
+    <p>Decompression Ratio: <%= decompressionRatio.toFixed(2) %></p>
+<% } %> -->
+        </div>
+        <% if (compressionRatio) { %>
+            <script>
+                var compressionRatio = <%= compressionRatio.toFixed(2) %>;
+                // Now you can use the compressionRatio variable in your JavaScript code
+                console.log("Compression Ratio:", compressionRatio);
+                var xyValues = [
+                    { x: 40, y: 1 + compressionRatio },
+                    { x: 50, y: 2 + compressionRatio-1 },
+                    { x: 60, y: 3 + compressionRatio },
+                    { x: 70, y: 4 + compressionRatio-2 },
+                    { x: 80, y: 5 + compressionRatio },
+                    { x: 90, y: 6 + compressionRatio },
+                    { x: 100, y: 7 + compressionRatio },
+                    { x: 110, y: 8 + compressionRatio-1 },
+                    { x: 120, y: 9 + compressionRatio },
+                    { x: 130, y: 10 + compressionRatio-3 },
+                    { x: 140, y: 11 + compressionRatio },
+                    { x: 150, y: 12 + compressionRatio-5 }
+                ];
+
+                new Chart("myChart", {
+                    type: "scatter",
+                    data: {
+                        datasets: [{
+                            pointRadius: 4,
+                            pointBackgroundColor: "rgb(0,0,255)",
+                            data: xyValues
+                        }]
+                    },
+                    options: {
+                        legend: { display: false },
+                        scales: {
+                            xAxes: [{ ticks: { min: 40, max: 160 } }],
+                            yAxes: [{ ticks: { min: 6, max: 16 } }],
+                        }
+                    }
+                });
+            </script>
+            <% } %>
+</body>
+
+</html>
